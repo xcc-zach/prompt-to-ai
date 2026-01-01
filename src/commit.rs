@@ -38,7 +38,7 @@ fn get_change_str() -> Result<String, Box<dyn std::error::Error>> {
         let content = std::str::from_utf8(line.content()).unwrap_or("");
         // Capture file name from diff header
         if let Some(caps) = filename_re.captures(content) {
-            current_filename = Some((&caps[1]).to_owned());
+            current_filename = Some(caps[1].to_owned());
             file_content_starts = false;
         }
         // Push changes to the according entry
@@ -48,9 +48,7 @@ fn get_change_str() -> Result<String, Box<dyn std::error::Error>> {
                 file_content_starts = true;
             }
             if file_content_starts {
-                let entry = changes
-                    .entry(filename.to_string())
-                    .or_insert_with(String::new);
+                let entry = changes.entry(filename.to_string()).or_default();
                 let sign = line.origin();
                 entry.push_str(&format!("{} {}", sign, content));
             }
