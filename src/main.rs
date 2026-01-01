@@ -17,7 +17,6 @@ enum Command {
         #[arg(short = 'e', long = "english", default_value_t = false)]
         use_english: bool,
     },
-    Structure,
     Ls,
 }
 fn main() {
@@ -42,14 +41,11 @@ fn main() {
                 .transpose()
                 .expect("Failed to clean up temporary file");
         }
-        Command::Structure => {
+        Command::Ls => {
             let file_structure = dir_structure(Path::new("."), 0, &DirStructureFormat::List);
             file_structure
                 .clip(ClipFallback::Print)
                 .expect("Failed to clip file structure");
-        }
-        Command::Ls => {
-            println!("Listing files is not implemented yet.");
         }
     }
 }
