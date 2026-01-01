@@ -1,5 +1,8 @@
 use clap::{Parser, Subcommand};
-use prompt_to_ai::{add_commit, clip_commit_prompt};
+use prompt_to_ai::{
+    Clip, ClipFallback, DirStructureFormat, add_commit, dir_structure, get_commit_prompt,
+};
+use std::path::Path;
 
 #[derive(Parser)]
 #[command(name = "pai")]
@@ -14,20 +17,36 @@ enum Command {
         #[arg(short = 'e', long = "english", default_value_t = false)]
         use_english: bool,
     },
+    Structure,
     Ls,
 }
 fn main() {
     let cli = Cli::parse();
     match cli.command {
         Command::Commit { use_english } => {
-            clip_commit_prompt(!use_english).unwrap();
-            // Prompt user to enter commit message
+            let commit_prompt =
+                get_commit_prompt(!use_english).expect("Failed to get commit prompt");
+            let tmp_file_handle = commit_prompt
+                .clip(ClipFallback::Save)
+                .expect("Failed to clip commit prompt");
             println!("Please enter commit message:");
             let mut commit_msg = String::new();
-            std::io::stdin().read_line(&mut commit_msg).unwrap();
+            std::io::stdin()
+                .read_line(&mut commit_msg)
+                .expect("Failed to read line");
             println!("Committing with message: {}", commit_msg.trim());
-            add_commit(commit_msg.trim().to_owned()).unwrap();
+            add_commit(commit_msg.trim().to_owned()).expect("Failed to add commit");
             println!("Committed successfully.");
+            tmp_file_handle
+                .map(|handle| handle.cleanup())
+                .transpose()
+                .expect("Failed to clean up temporary file");
+        }
+        Command::Structure => {
+            let file_structure = dir_structure(Path::new("."), 0, &DirStructureFormat::List);
+            file_structure
+                .clip(ClipFallback::Print)
+                .expect("Failed to clip file structure");
         }
         Command::Ls => {
             println!("Listing files is not implemented yet.");
