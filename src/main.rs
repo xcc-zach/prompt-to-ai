@@ -33,13 +33,13 @@ fn main() {
             std::io::stdin()
                 .read_line(&mut commit_msg)
                 .expect("Failed to read line");
-            println!("Committing with message: {}", commit_msg.trim());
-            add_commit(commit_msg.trim().to_owned()).expect("Failed to add commit");
-            println!("Committed successfully.");
             tmp_file_handle
                 .map(|handle| handle.cleanup())
                 .transpose()
                 .expect("Failed to clean up temporary file");
+            println!("Committing with message: {}", commit_msg.trim());
+            add_commit(commit_msg.trim().to_owned()).expect("Failed to add commit");
+            println!("Committed successfully.");
         }
         Command::Ls => {
             let file_structure = dir_structure(Path::new("."), 0, &DirStructureFormat::List);
