@@ -1,6 +1,5 @@
-mod commit;
-mod ls;
+pub mod commit;
+pub mod config;
+pub mod ls;
 mod utils;
-pub use commit::*;
-pub use ls::*;
 pub use utils::*;
