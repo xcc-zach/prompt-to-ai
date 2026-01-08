@@ -1,6 +1,6 @@
 use arboard::Clipboard;
 use std::fs::{File, remove_file};
-use std::io::Write;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 pub trait Clip {
@@ -14,7 +14,16 @@ pub enum ClipFallback {
     Save,
 }
 pub struct FileHandle(File, PathBuf);
+pub fn prompt_to_input(target: &mut String, prompt: &str) -> Result<(), io::Error> {
+    println!("{prompt}");
+    io::stdout().flush()?;
+    io::stdin().read_line(target)?;
 
+    let old = std::mem::take(target);
+    target.push_str(old.trim());
+
+    Ok(())
+}
 fn create_temp_file() -> Result<FileHandle, std::io::Error> {
     let path = Path::new("pai_temp.txt");
     let file = File::create(path)?;

@@ -48,11 +48,8 @@ fn main() {
             let tmp_file_handle = commit_prompt
                 .clip(ClipFallback::Save)
                 .expect("Failed to clip commit prompt");
-            println!("Please enter commit message:");
             let mut commit_msg = String::new();
-            std::io::stdin()
-                .read_line(&mut commit_msg)
-                .expect("Failed to read line");
+            prompt_to_input(&mut commit_msg, "Please enter commit message:").expect("IO failed");
             tmp_file_handle
                 .map(|handle| handle.cleanup())
                 .transpose()
