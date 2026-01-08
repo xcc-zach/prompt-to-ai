@@ -15,6 +15,12 @@ pub enum ConfigError {
     #[error("Config read error: {0}")]
     ConfigReadError(String),
 }
+#[derive(Default, Serialize, Deserialize, Clone)]
+pub struct ModelConfigItem {
+    api_key: String,
+    model: String,
+    base_url: Option<String>,
+}
 pub fn add_model_config(
     tag: String,
     api_key: String,
@@ -28,7 +34,7 @@ pub fn add_model_config(
                 "model already exists: {tag}"
             )));
         }
-        mc.current_model_tag = Some(tag.clone());
+        mc.current_model_tag.get_or_insert_with(|| tag.clone());
         mc.items.insert(
             tag,
             ModelConfigItem {
@@ -59,6 +65,22 @@ pub fn delete_model_config(tag: String) -> Result<(), ConfigError> {
     })
 }
 
+pub fn current_model_config() -> Result<ModelConfigItem, ConfigError> {
+    let model_config = load_config()?.model_config;
+    let model_tag = &model_config
+        .current_model_tag
+        .ok_or(ConfigError::ConfigReadError(
+            "no model configured".to_string(),
+        ))?;
+    model_config
+        .items
+        .get(model_tag)
+        .ok_or(ConfigError::ConfigReadError(format!(
+            "model {model_tag} not registered"
+        )))
+        .cloned()
+}
+
 #[derive(Default, Serialize, Deserialize)]
 struct Config {
     model_config: ModelConfig,
@@ -68,12 +90,7 @@ struct ModelConfig {
     current_model_tag: Option<String>,
     items: BTreeMap<String, ModelConfigItem>,
 }
-#[derive(Default, Serialize, Deserialize)]
-struct ModelConfigItem {
-    api_key: String,
-    model: String,
-    base_url: Option<String>,
-}
+
 fn config_file_path() -> Result<PathBuf, ConfigError> {
     std::env::current_exe()
         .map_err(|e| ConfigError::PathError(e.to_string()))?
