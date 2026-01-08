@@ -33,13 +33,42 @@ fn main() {
     match cli.command {
         Command::Config { action } => match action {
             ConfigAction::AddModel => {
-                todo!();
+                let mut tag = String::new();
+                let mut model = String::new();
+                let mut api_key = String::new();
+                let mut base_url = String::new();
+                prompt_to_input(&mut tag, "Enter tag:")
+                    .unwrap_or_else(|e| eprintln!("Error occurred while entering tag: {e}"));
+                prompt_to_input(&mut model, "Enter model name:")
+                    .unwrap_or_else(|e| eprintln!("Error occurred while entering model name: {e}"));
+                prompt_to_input(&mut api_key, "Enter api key:")
+                    .unwrap_or_else(|e| eprintln!("Error occurred while entering api key: {e}"));
+                prompt_to_input(&mut base_url, "Enter base url (if any)")
+                    .unwrap_or_else(|e| eprintln!("Error occurred while entering base url: {e}"));
+                let base_url_opt = if base_url.trim().is_empty() {
+                    None
+                } else {
+                    Some(base_url)
+                };
+                config::add_model_config(tag, api_key, model, base_url_opt)
+                    .unwrap_or_else(|e| eprintln!("Error occurred while adding model: {e}"));
+                println!("Model config added!");
             }
             ConfigAction::UseModel => {
-                todo!();
+                let mut tag = String::new();
+                prompt_to_input(&mut tag, "Enter tag to switch to:")
+                    .unwrap_or_else(|e| eprintln!("Error occurred while entering tag: {e}"));
+                config::use_model_config(tag)
+                    .unwrap_or_else(|e| eprintln!("Error occurred while switching model: {e}"));
+                println!("Model switched!");
             }
             ConfigAction::RemoveModel => {
-                todo!();
+                let mut tag = String::new();
+                prompt_to_input(&mut tag, "Enter tag to remove:")
+                    .unwrap_or_else(|e| eprintln!("Error occurred while entering tag: {e}"));
+                config::delete_model_config(tag)
+                    .unwrap_or_else(|e| eprintln!("Error occurred while removing model: {e}"));
+                println!("Model config removed!");
             }
         },
         Command::Commit { use_english } => {
