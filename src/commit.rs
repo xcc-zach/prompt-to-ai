@@ -32,7 +32,7 @@ fn get_change_str() -> Result<String, Box<dyn std::error::Error>> {
 
     let mut current_filename: Option<String> = None;
     let mut file_content_starts = false;
-    let filename_re = Regex::new(r"diff --git a/(.+?) b/(.+?)").unwrap();
+    let filename_re = Regex::new(r"diff --git a/(.+?) b/(.+?)")?;
     let index = repo.index()?;
     let diff = repo.diff_index_to_workdir(Some(&index), None)?;
     diff.print(DiffFormat::Patch, |_delta, _hunk, line| {
