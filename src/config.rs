@@ -17,15 +17,15 @@ pub enum ConfigError {
 }
 #[derive(Default, Serialize, Deserialize, Clone)]
 pub struct ModelConfigItem {
-    api_key: String,
-    model: String,
-    base_url: Option<String>,
+    pub api_key: String,
+    pub model: String,
+    pub base_url: String,
 }
 pub fn add_model_config(
     tag: String,
     api_key: String,
     model: String,
-    base_url: Option<String>,
+    base_url: String,
 ) -> Result<(), ConfigError> {
     with_model_config(|mc| {
         let model_items = &mc.items;

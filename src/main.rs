@@ -45,12 +45,7 @@ fn main() {
                     .unwrap_or_else(|e| eprintln!("Error occurred while entering api key: {e}"));
                 prompt_to_input(&mut base_url, "Enter base url (if any)")
                     .unwrap_or_else(|e| eprintln!("Error occurred while entering base url: {e}"));
-                let base_url_opt = if base_url.trim().is_empty() {
-                    None
-                } else {
-                    Some(base_url)
-                };
-                config::add_model_config(tag, api_key, model, base_url_opt)
+                config::add_model_config(tag, api_key, model, base_url)
                     .unwrap_or_else(|e| eprintln!("Error occurred while adding model: {e}"));
                 println!("Model config added!");
             }
