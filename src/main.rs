@@ -41,31 +41,40 @@ fn main() {
                 let mut api_key = String::new();
                 let mut base_url = String::new();
                 prompt_to_input(&mut tag, "Enter tag:")
-                    .unwrap_or_else(|e| eprintln!("Error occurred while entering tag: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while entering tag: {e}"))
+                    .unwrap();
                 prompt_to_input(&mut model, "Enter model name:")
-                    .unwrap_or_else(|e| eprintln!("Error occurred while entering model name: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while entering model name: {e}"))
+                    .unwrap();
                 prompt_to_input(&mut api_key, "Enter api key:")
-                    .unwrap_or_else(|e| eprintln!("Error occurred while entering api key: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while entering api key: {e}"))
+                    .unwrap();
                 prompt_to_input(&mut base_url, "Enter base url:")
-                    .unwrap_or_else(|e| eprintln!("Error occurred while entering base url: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while entering base url: {e}"))
+                    .unwrap();
                 config::add_model_config(tag, api_key, model, base_url)
-                    .unwrap_or_else(|e| eprintln!("Error occurred while adding model: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while adding model: {e}"))
+                    .unwrap();
                 println!("Model config added!");
             }
             ConfigAction::UseModel => {
                 let mut tag = String::new();
                 prompt_to_input(&mut tag, "Enter tag to switch to:")
-                    .unwrap_or_else(|e| eprintln!("Error occurred while entering tag: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while entering tag: {e}"))
+                    .unwrap();
                 config::use_model_config(tag)
-                    .unwrap_or_else(|e| eprintln!("Error occurred while switching model: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while switching model: {e}"))
+                    .unwrap();
                 println!("Model switched!");
             }
             ConfigAction::RemoveModel => {
                 let mut tag = String::new();
                 prompt_to_input(&mut tag, "Enter tag to remove:")
-                    .unwrap_or_else(|e| eprintln!("Error occurred while entering tag: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while entering tag: {e}"))
+                    .unwrap();
                 config::delete_model_config(tag)
-                    .unwrap_or_else(|e| eprintln!("Error occurred while removing model: {e}"));
+                    .map_err(|e| eprintln!("Error occurred while removing model: {e}"))
+                    .unwrap();
                 println!("Model config removed!");
             }
             ConfigAction::ListModels => {
@@ -82,8 +91,9 @@ fn main() {
             }
         },
         Command::Commit { use_english, auto } => {
-            let commit_prompt =
-                commit::get_commit_prompt(!use_english).expect("Failed to get commit prompt");
+            let commit_prompt = commit::get_commit_prompt(!use_english)
+                .map_err(|e| eprintln!("Failed to get commit prompt: {e}"))
+                .unwrap();
             let mut commit_msg = String::new();
             if auto {
                 println!("Auto generating commit msg with LLM...");
@@ -95,16 +105,21 @@ fn main() {
             } else {
                 let tmp_file_handle = commit_prompt
                     .clip(ClipFallback::Save)
-                    .expect("Failed to clip commit prompt");
+                    .map_err(|e| eprintln!("Failed to clip commit prompt: {e}"))
+                    .unwrap();
                 prompt_to_input(&mut commit_msg, "Please enter commit message:")
-                    .expect("IO failed");
+                    .map_err(|e| eprintln!("IO failed: {e}"))
+                    .unwrap();
                 tmp_file_handle
                     .map(|handle| handle.cleanup())
                     .transpose()
-                    .expect("Failed to clean up temporary file");
+                    .map_err(|e| eprintln!("Failed to clean up temporary file: {e}"))
+                    .unwrap();
             }
             println!("Committing with message: {}", commit_msg.trim());
-            commit::add_commit(commit_msg.trim().to_owned()).expect("Failed to add commit");
+            commit::add_commit(commit_msg.trim().to_owned())
+                .map_err(|e| eprintln!("Failed to add commit: {e}"))
+                .unwrap();
             println!("Committed successfully.");
         }
         Command::Ls => {
@@ -112,7 +127,8 @@ fn main() {
                 ls::dir_structure(Path::new("."), 0, &ls::DirStructureFormat::List);
             file_structure
                 .clip(ClipFallback::Print)
-                .expect("Failed to clip file structure");
+                .map_err(|e| eprintln!("Failed to clip file structure: {e}"))
+                .unwrap();
         }
     }
 }
