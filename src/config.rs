@@ -65,6 +65,11 @@ pub fn delete_model_config(tag: String) -> Result<(), ConfigError> {
     })
 }
 
+pub fn get_model_configs() -> Result<ModelConfigMap, ConfigError> {
+    let model_config = load_config()?.model_config;
+    Ok(model_config.items)
+}
+
 pub fn current_model_config() -> Result<ModelConfigItem, ConfigError> {
     let model_config = load_config()?.model_config;
     let model_tag = &model_config
@@ -85,10 +90,11 @@ pub fn current_model_config() -> Result<ModelConfigItem, ConfigError> {
 struct Config {
     model_config: ModelConfig,
 }
+type ModelConfigMap = BTreeMap<String, ModelConfigItem>;
 #[derive(Default, Serialize, Deserialize)]
 struct ModelConfig {
     current_model_tag: Option<String>,
-    items: BTreeMap<String, ModelConfigItem>,
+    items: ModelConfigMap,
 }
 
 fn config_file_path() -> Result<PathBuf, ConfigError> {

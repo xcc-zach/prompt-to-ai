@@ -29,6 +29,7 @@ enum ConfigAction {
     AddModel,
     UseModel,
     RemoveModel,
+    ListModels,
 }
 fn main() {
     let cli = Cli::parse();
@@ -66,6 +67,18 @@ fn main() {
                 config::delete_model_config(tag)
                     .unwrap_or_else(|e| eprintln!("Error occurred while removing model: {e}"));
                 println!("Model config removed!");
+            }
+            ConfigAction::ListModels => {
+                println!("Model configs:");
+                let model_configs = config::get_model_configs()
+                    .map_err(|e| eprintln!("Error occurred while reading model configs: {e}"))
+                    .unwrap();
+                for (key, item) in &model_configs {
+                    println!("######################################");
+                    println!("{key}");
+                    println!("{} {}", item.model, item.base_url);
+                    println!("{}", item.api_key);
+                }
             }
         },
         Command::Commit { use_english, auto } => {
