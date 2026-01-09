@@ -1,4 +1,4 @@
-use crate::config::current_model_config;
+use crate::config::llm::current_model_config;
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::error::Error;

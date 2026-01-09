@@ -52,7 +52,7 @@ fn main() {
                 prompt_to_input(&mut base_url, "Enter base url:")
                     .map_err(|e| eprintln!("Error occurred while entering base url: {e}"))
                     .unwrap();
-                config::add_model_config(tag, api_key, model, base_url)
+                config::llm::add_model_config(tag, api_key, model, base_url)
                     .map_err(|e| eprintln!("Error occurred while adding model: {e}"))
                     .unwrap();
                 println!("Model config added!");
@@ -62,7 +62,7 @@ fn main() {
                 prompt_to_input(&mut tag, "Enter tag to switch to:")
                     .map_err(|e| eprintln!("Error occurred while entering tag: {e}"))
                     .unwrap();
-                config::use_model_config(tag)
+                config::llm::use_model_config(tag)
                     .map_err(|e| eprintln!("Error occurred while switching model: {e}"))
                     .unwrap();
                 println!("Model switched!");
@@ -72,14 +72,14 @@ fn main() {
                 prompt_to_input(&mut tag, "Enter tag to remove:")
                     .map_err(|e| eprintln!("Error occurred while entering tag: {e}"))
                     .unwrap();
-                config::delete_model_config(tag)
+                config::llm::delete_model_config(tag)
                     .map_err(|e| eprintln!("Error occurred while removing model: {e}"))
                     .unwrap();
                 println!("Model config removed!");
             }
             ConfigAction::ListModels => {
                 println!("Model configs:");
-                let model_configs = config::get_model_configs()
+                let model_configs = config::llm::get_model_configs()
                     .map_err(|e| eprintln!("Error occurred while reading model configs: {e}"))
                     .unwrap();
                 for (key, item) in &model_configs {
