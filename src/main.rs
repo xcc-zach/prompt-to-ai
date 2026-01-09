@@ -14,6 +14,8 @@ enum Command {
     Commit {
         #[arg(short = 'e', long = "english", default_value_t = false)]
         use_english: bool,
+        #[arg(long = "auto", default_value_t = false)]
+        auto: bool,
     },
     Ls,
     Config {
@@ -43,7 +45,7 @@ fn main() {
                     .unwrap_or_else(|e| eprintln!("Error occurred while entering model name: {e}"));
                 prompt_to_input(&mut api_key, "Enter api key:")
                     .unwrap_or_else(|e| eprintln!("Error occurred while entering api key: {e}"));
-                prompt_to_input(&mut base_url, "Enter base url (if any)")
+                prompt_to_input(&mut base_url, "Enter base url:")
                     .unwrap_or_else(|e| eprintln!("Error occurred while entering base url: {e}"));
                 config::add_model_config(tag, api_key, model, base_url)
                     .unwrap_or_else(|e| eprintln!("Error occurred while adding model: {e}"));
@@ -66,18 +68,28 @@ fn main() {
                 println!("Model config removed!");
             }
         },
-        Command::Commit { use_english } => {
+        Command::Commit { use_english, auto } => {
             let commit_prompt =
                 commit::get_commit_prompt(!use_english).expect("Failed to get commit prompt");
-            let tmp_file_handle = commit_prompt
-                .clip(ClipFallback::Save)
-                .expect("Failed to clip commit prompt");
             let mut commit_msg = String::new();
-            prompt_to_input(&mut commit_msg, "Please enter commit message:").expect("IO failed");
-            tmp_file_handle
-                .map(|handle| handle.cleanup())
-                .transpose()
-                .expect("Failed to clean up temporary file");
+            if auto {
+                println!("Auto generating commit msg with LLM...");
+                commit_msg.push_str(
+                    &commit::get_commit_message(commit_prompt)
+                        .map_err(|e| eprintln!("Error occurred while generating commit msg: {e}"))
+                        .unwrap(),
+                );
+            } else {
+                let tmp_file_handle = commit_prompt
+                    .clip(ClipFallback::Save)
+                    .expect("Failed to clip commit prompt");
+                prompt_to_input(&mut commit_msg, "Please enter commit message:")
+                    .expect("IO failed");
+                tmp_file_handle
+                    .map(|handle| handle.cleanup())
+                    .transpose()
+                    .expect("Failed to clean up temporary file");
+            }
             println!("Committing with message: {}", commit_msg.trim());
             commit::add_commit(commit_msg.trim().to_owned()).expect("Failed to add commit");
             println!("Committed successfully.");

@@ -13,6 +13,15 @@ pub struct Message {
     role: String,
     content: String,
 }
+impl Message {
+    pub fn new(role: impl Into<String>, content: impl Into<String>) -> Self {
+        Self {
+            role: role.into(),
+            content: content.into(),
+        }
+    }
+}
+
 type ChatHistory = Vec<Message>;
 pub fn get_response(messages: ChatHistory) -> Result<String, Box<dyn Error>> {
     let model_config = current_model_config()?;

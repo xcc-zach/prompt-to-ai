@@ -2,6 +2,7 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::process::Command;
 
+use crate::utils::llm;
 use git2::{DiffFormat, Repository, Status, StatusOptions};
 
 fn get_change_str() -> Result<String, Box<dyn std::error::Error>> {
@@ -77,6 +78,12 @@ Only provide the commit message without any additional commentary or explanation
     }
     let change_str = get_change_str()?;
     Ok(format!("{}\n\nChanges:\n{}", prompt, change_str))
+}
+
+pub fn get_commit_message(prompt: String) -> Result<String, Box<dyn std::error::Error>> {
+    let messages = vec![llm::Message::new("user", prompt)];
+    let content = llm::get_response(messages)?;
+    Ok(content)
 }
 
 pub fn add_commit(commit_msg: String) -> Result<(), Box<dyn std::error::Error>> {
