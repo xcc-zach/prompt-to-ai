@@ -3,7 +3,7 @@ use prompt_to_ai::*;
 use std::path::Path;
 
 #[derive(Parser)]
-#[command(name = "pai")]
+#[command(name = "pai", about = "A CLI tool for LLM-powered developer workflows")]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -11,25 +11,33 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    #[command(about = "Generate and create a git commit using LLM")]
     Commit {
-        #[arg(short = 'e', long = "english", default_value_t = false)]
+        #[arg(short = 'e', long = "english", default_value_t = false, help = "Force English language for commit message")]
         use_english: bool,
-        #[arg(long = "auto", default_value_t = false)]
+        #[arg(long = "auto", default_value_t = false, help = "Automatically generate commit message without manual input")]
         auto: bool,
     },
+    #[command(about = "List directory contents and copy to clipboard")]
     Ls,
+    #[command(about = "Manage LLM model configurations")]
     Config {
         #[command(subcommand)]
         action: ConfigAction,
     },
+    #[command(about = "Extract bundled assets to set up Claude Code and Codex environments")]
     Unpack,
 }
 
 #[derive(Subcommand)]
 enum ConfigAction {
+    #[command(about = "Add a new LLM model configuration")]
     AddModel,
+    #[command(about = "Switch to a different model configuration")]
     UseModel,
+    #[command(about = "Remove a model configuration")]
     RemoveModel,
+    #[command(about = "List all saved model configurations")]
     ListModels,
 }
 fn main() {
