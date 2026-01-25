@@ -1,0 +1,1 @@
+Do `git commit -m ` with a special message: "ai docs: add docs after reading through codebase"
