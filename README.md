@@ -11,7 +11,7 @@ A CLI tool for LLM-powered developer workflows.
 
 ## Download
 
-[Release](https://github.com/xcc-zach/prompt-to-ai/releases/tag/v0.1.1)
+[Release](https://github.com/xcc-zach/prompt-to-ai/releases/latest)
 
 ## Usage
 
