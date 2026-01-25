@@ -24,5 +24,18 @@
   "fileSuggestion": {
     "type": "command",
     "command": "python -c \"from pathlib import Path; import subprocess, sys; script=Path('~/.claude/file_suggestion.py').expanduser(); subprocess.run([sys.executable, str(script)], check=True)\""
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash(git commit -m*)",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If you just do git commit with a non-document change, remember to trigger `update-codebase-understanding` skill later. Respond with JSON: {\"ok\": true}."
+          }
+        ]
+      }
+    ]
   }
 }
