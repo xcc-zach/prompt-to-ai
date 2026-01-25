@@ -132,8 +132,8 @@ fn main() {
                 .unwrap();
         }
         Command::Unpack => {
-            unpack::unpack_skills()
-                .map_err(|e| eprintln!("Failed to unpack skills: {e}"))
+            unpack::unpack_all()
+                .map_err(|e| eprintln!("Failed to unpack assets: {e}"))
                 .unwrap();
         }
     }

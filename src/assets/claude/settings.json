@@ -1,0 +1,28 @@
+{
+  "model": "opus",
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "ask" : [
+        "Read(./.env)",
+        "Bash(rm:*)",
+        "Bash(mkdir:*)",
+        "Bash(touch:*)"
+    ],
+	"allow": [
+        "Read",
+        "WebFetch",
+        "Bash"
+    ]
+   },
+   "attribution": {
+    "commit": "🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+    "pr": "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+  },
+  "fileSuggestion": {
+    "type": "command",
+    "command": "python -c \"from pathlib import Path; import subprocess, sys; script=Path('~/.claude/file_suggestion.py').expanduser(); subprocess.run([sys.executable, str(script)], check=True)\""
+  }
+}
