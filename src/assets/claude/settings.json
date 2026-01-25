@@ -36,6 +36,16 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Check if you have triggered read-codebase-docs before continuing. Trigger it if you have not done so in this session, and hint user that you are reading docs.\""
+          }
+        ]
+      }
     ]
   }
 }
