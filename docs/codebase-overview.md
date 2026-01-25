@@ -23,7 +23,7 @@ The tool uses an OpenAI-compatible API interface, allowing it to work with vario
 
 ## Individual File Descriptions
 
-- `src/main.rs`: CLI entrypoint that uses clap for argument parsing, defines the command structure (Commit, Ls, Config, Unpack), and dispatches to appropriate module functions for LLM-assisted commit workflow, directory listing, configuration management, and asset unpacking.
+- `src/main.rs`: CLI entrypoint that uses clap for argument parsing with comprehensive help messages, defines the command structure (Commit, Ls, Config, Unpack) with descriptive help text for all subcommands and arguments, and dispatches to appropriate module functions for LLM-assisted commit workflow, directory listing, configuration management, and asset unpacking.
 
 - `src/lib.rs`: Library root that declares four public submodules (commit, config, ls, unpack) and one private submodule (utils), re-exporting utility functions for external consumers.
 
@@ -65,7 +65,7 @@ The following files are bundled into the binary at compile time and extracted vi
 
 - `src/assets/claude/CLAUDE.md`: Global instructions file that enforces English for code comments and commit messages, and establishes conventional commit message format with type prefixes (feat, fix, docs, style, refactor, perf, test) followed by a colon and concise description.
 
-- `src/assets/claude/settings.json`: Claude Code settings configuration that specifies the model (opus), enables rust-analyzer-lsp plugin, sets permission rules for file access and bash commands, defines attribution templates for commits and PRs, configures a file suggestion command, and includes a PostToolUse hook that triggers after git commits to remind about updating codebase documentation for non-document changes.
+- `src/assets/claude/settings.json`: Claude Code settings configuration that specifies the model (opus), enables rust-analyzer-lsp plugin, sets permission rules for file access and bash commands, defines attribution templates for commits and PRs, configures a file suggestion command, includes a PostToolUse hook that triggers after git commits to remind about updating codebase documentation for non-document changes, and includes a SessionStart hook that reminds to trigger the read-codebase-docs skill at the beginning of new sessions.
 
 ### Claude Code Skills
 
@@ -76,3 +76,5 @@ The following files are bundled into the binary at compile time and extracted vi
 - `src/assets/skills/ai-docs-commit/SKILL.md`: YAML-frontmatter skill definition with fork context that instructs the agent to run `git add` followed by `git commit -m "ai docs: $ARGUMENTS"` for committing AI-generated or modified documentation files, explicitly ensuring only documentation files are staged and providing a standardized commit message format for AI documentation changes.
 
 - `src/assets/skills/update-codebase-understanding/SKILL.md`: Skill configuration that depends on the `read-through-codebase`, `summarize-file`, and `ai-docs-commit` skills; it defines a workflow that fetches git history to find commits after the last "ai docs:" commit, analyzes code changes across those commits, uses `summarize-file` to get updated summaries for changed files, updates documents under `docs/` accordingly, and commits with the `ai-docs-commit` skill.
+
+- `src/assets/skills/read-codebase-docs/SKILL.md`: Skill definition that instructs the agent to read all documents under the `docs` directory that were created via the `read-through-codebase` skill at session start, outputting a message if those documents do not exist but without triggering the `read-through-codebase` skill automatically.
