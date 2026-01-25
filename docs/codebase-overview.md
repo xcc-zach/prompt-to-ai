@@ -7,7 +7,7 @@ This is a Rust CLI tool called "pai" (prompt-to-ai) that assists developers with
 1. **Automated Git Commit Messages**: Analyzes git diff and generates conventional commit messages using LLM APIs
 2. **Directory Structure Listing**: Outputs directory contents to clipboard in tree or list format
 3. **LLM Configuration Management**: Manages multiple LLM model configurations (API keys, endpoints, model names)
-4. **Asset Unpacking**: Bootstraps Claude Code/Codex environments by extracting bundled skills and configurations to user home directories
+4. **Asset Unpacking**: Bootstraps Claude Code/Codex environments by extracting bundled skills, agents, and configurations to user home directories
 
 The tool uses an OpenAI-compatible API interface, allowing it to work with various LLM providers.
 
@@ -52,3 +52,21 @@ The tool uses an OpenAI-compatible API interface, allowing it to work with vario
 - `src/utils/assets.rs`: Runtime interface for accessing files bundled into the binary at compile time, providing functions to look up and iterate over embedded assets.
 
 - `.github/workflows/rust-ci.yml`: GitHub Actions CI workflow that runs on Ubuntu/Windows/macOS, performs format checking, runs tests, builds release binaries, and uploads platform-specific artifacts on pushes to main/master and pull requests.
+
+## Embedded Assets
+
+The following files are bundled into the binary at compile time and extracted via the `unpack` command to set up Claude Code and Codex environments:
+
+### Claude Code Agents
+
+- `src/assets/claude/agents/file-summarizer.md`: YAML-frontmatter Markdown file that defines a Claude Code agent named "file-summarizer" with purple color theme, declares a single skill dependency ("summarize-file"), and instructs the agent to use that skill to summarize files according to the detailed requirements defined within the skill itself.
+
+### Claude Code Skills
+
+- `src/assets/skills/read-through-codebase/SKILL.md`: YAML-frontmatter skill definition that depends on the `ai-docs-commit` skill for committing and references an external instruction template at `instructions/codebase-overview.md`; it specifies a procedural workflow that directs Claude Code to analyze a codebase comprehensively, write a `docs/codebase-overview.md` file (skipping if it already exists), and then invoke the ai-docs-commit skill to commit.
+
+- `src/assets/skills/read-through-codebase/instructions/codebase-overview.md`: Markdown instruction template that directs an AI agent to enumerate all relevant source files in a project (excluding docs, configs, and build artifacts), invoke `file-summarizer` agents or the `summarize-file` skill to generate per-file summaries, then produce a consolidated overview comprising a project summary, a recommended reading order, and individual file descriptions.
+
+- `src/assets/skills/ai-docs-commit/SKILL.md`: YAML-frontmatter skill definition with fork context that instructs the agent to run `git commit -m "ai docs: $ARGUMENTS"` for committing AI-generated or modified documentation files, providing a standardized commit message format for AI documentation changes.
+
+- `src/assets/skills/update-codebase-understanding/SKILL.md`: Skill configuration that depends on the `read-through-codebase`, `summarize-file`, and `ai-docs-commit` skills; it defines a workflow that fetches git history to find commits after the last "ai docs:" commit, analyzes code changes across those commits, uses `summarize-file` to get updated summaries for changed files, updates documents under `docs/` accordingly, and commits with the `ai-docs-commit` skill.
