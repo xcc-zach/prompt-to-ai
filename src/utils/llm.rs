@@ -23,6 +23,11 @@ impl Message {
 }
 
 type ChatHistory = Vec<Message>;
+pub fn get_one_turn_response(message: impl Into<String>) -> Result<String, Box<dyn Error>> {
+    let messages = vec![Message::new("user", message)];
+    get_response(messages)
+}
+
 pub fn get_response(messages: ChatHistory) -> Result<String, Box<dyn Error>> {
     let model_config = current_model_config()?;
     let target_url = format!(
