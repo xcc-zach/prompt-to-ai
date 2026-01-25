@@ -4,4 +4,4 @@ description: Create a git commit for AI-generated/modified documentation files. 
 context: fork
 ---
 
-Do `git commit -m ` with a special message: "ai docs: $ARGUMENTS"
+Do `git add` and `git commit -m ` with a special message: "ai docs: $ARGUMENTS". Only add and commit documentation files.
