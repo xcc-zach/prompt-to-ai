@@ -1,3 +1,4 @@
+pub mod assets;
 mod clip;
 mod io;
 pub mod llm;

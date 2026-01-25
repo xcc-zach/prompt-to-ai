@@ -22,6 +22,7 @@ enum Command {
         #[command(subcommand)]
         action: ConfigAction,
     },
+    Unpack,
 }
 
 #[derive(Subcommand)]
@@ -128,6 +129,11 @@ fn main() {
             file_structure
                 .clip(ClipFallback::Print)
                 .map_err(|e| eprintln!("Failed to clip file structure: {e}"))
+                .unwrap();
+        }
+        Command::Unpack => {
+            unpack::unpack_skills()
+                .map_err(|e| eprintln!("Failed to unpack skills: {e}"))
                 .unwrap();
         }
     }
