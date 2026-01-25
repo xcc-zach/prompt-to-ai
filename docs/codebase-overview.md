@@ -61,12 +61,18 @@ The following files are bundled into the binary at compile time and extracted vi
 
 - `src/assets/claude/agents/file-summarizer.md`: YAML-frontmatter Markdown file that defines a Claude Code agent named "file-summarizer" with purple color theme, declares a single skill dependency ("summarize-file"), and instructs the agent to use that skill to summarize files according to the detailed requirements defined within the skill itself.
 
+### Claude Code Configuration
+
+- `src/assets/claude/CLAUDE.md`: Global instructions file that enforces English for code comments and commit messages, and establishes conventional commit message format with type prefixes (feat, fix, docs, style, refactor, perf, test) followed by a colon and concise description.
+
+- `src/assets/claude/settings.json`: Claude Code settings configuration that specifies the model (opus), enables rust-analyzer-lsp plugin, sets permission rules for file access and bash commands, defines attribution templates for commits and PRs, configures a file suggestion command, and includes a PostToolUse hook that triggers after git commits to remind about updating codebase documentation for non-document changes.
+
 ### Claude Code Skills
 
 - `src/assets/skills/read-through-codebase/SKILL.md`: YAML-frontmatter skill definition that depends on the `ai-docs-commit` skill for committing and references an external instruction template at `instructions/codebase-overview.md`; it specifies a procedural workflow that directs Claude Code to analyze a codebase comprehensively, write a `docs/codebase-overview.md` file (skipping if it already exists), and then invoke the ai-docs-commit skill to commit.
 
 - `src/assets/skills/read-through-codebase/instructions/codebase-overview.md`: Markdown instruction template that directs an AI agent to enumerate all relevant source files in a project (excluding docs, configs, and build artifacts), invoke `file-summarizer` agents or the `summarize-file` skill to generate per-file summaries, then produce a consolidated overview comprising a project summary, a recommended reading order, and individual file descriptions.
 
-- `src/assets/skills/ai-docs-commit/SKILL.md`: YAML-frontmatter skill definition with fork context that instructs the agent to run `git commit -m "ai docs: $ARGUMENTS"` for committing AI-generated or modified documentation files, providing a standardized commit message format for AI documentation changes.
+- `src/assets/skills/ai-docs-commit/SKILL.md`: YAML-frontmatter skill definition with fork context that instructs the agent to run `git add` followed by `git commit -m "ai docs: $ARGUMENTS"` for committing AI-generated or modified documentation files, explicitly ensuring only documentation files are staged and providing a standardized commit message format for AI documentation changes.
 
 - `src/assets/skills/update-codebase-understanding/SKILL.md`: Skill configuration that depends on the `read-through-codebase`, `summarize-file`, and `ai-docs-commit` skills; it defines a workflow that fetches git history to find commits after the last "ai docs:" commit, analyzes code changes across those commits, uses `summarize-file` to get updated summaries for changed files, updates documents under `docs/` accordingly, and commits with the `ai-docs-commit` skill.
