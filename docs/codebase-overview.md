@@ -67,6 +67,8 @@ The following files are bundled into the binary at compile time and extracted vi
 
 - `src/assets/claude/settings.json`: Claude Code settings configuration that specifies the model (opus), enables rust-analyzer-lsp plugin, sets permission rules for file access and bash commands, defines attribution templates for commits and PRs, configures a file suggestion command, includes a PostToolUse hook that triggers after git commits to remind about updating codebase documentation for non-document changes, and includes a SessionStart hook that reminds to trigger the read-codebase-docs skill at the beginning of new sessions.
 
+- `src/assets/claude/file_suggestion.py`: Python script that provides a fuzzy file/directory suggestion system; reads a JSON object from stdin containing a query field, recursively walks the directory tree, categorizes matches into buckets based on basename vs dirname matching, and outputs top 15 results sorted by folder priority (src > docs > .github > other), match type, case sensitivity, and path.
+
 ### Claude Code Skills
 
 - `src/assets/skills/read-through-codebase/SKILL.md`: YAML-frontmatter skill definition that depends on the `ai-docs-commit` skill for committing and references an external instruction template at `instructions/codebase-overview.md`; it specifies a procedural workflow that directs Claude Code to analyze a codebase comprehensively, write a `docs/codebase-overview.md` file (skipping if it already exists), and then invoke the ai-docs-commit skill to commit.
@@ -78,3 +80,7 @@ The following files are bundled into the binary at compile time and extracted vi
 - `src/assets/skills/update-codebase-understanding/SKILL.md`: Skill configuration that depends on the `read-through-codebase`, `summarize-file`, and `ai-docs-commit` skills; it defines a workflow that fetches git history to find commits after the last "ai docs:" commit, analyzes code changes across those commits, uses `summarize-file` to get updated summaries for changed files, updates documents under `docs/` accordingly, and commits with the `ai-docs-commit` skill.
 
 - `src/assets/skills/read-codebase-docs/SKILL.md`: Skill definition that instructs the agent to read all documents under the `docs` directory that were created via the `read-through-codebase` skill at session start, outputting a message if those documents do not exist but without triggering the `read-through-codebase` skill automatically.
+
+- `src/assets/skills/summarize-file/SKILL.md`: Skill definition with fork context that instructs the AI to generate informative summaries of files (especially code files) by analyzing their dependencies, defined functions/classes/structs, internal interactions, and overall purpose, with example summaries demonstrating the expected concise, single-sentence technical summary format.
+
+- `src/assets/skills/github-mcp-with-retry/SKILL.md`: Skill definition that directs the agent to retry calling GitHub MCP tools until success or after 10 failed attempts, serving as a resilience wrapper to handle instability of the GitHub MCP server connection.
