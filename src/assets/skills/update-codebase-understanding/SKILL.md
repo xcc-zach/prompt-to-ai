@@ -1,6 +1,6 @@
 ---
 name: update-codebase-understanding
-description: Update documents created via read-through-codebase skill to reflect recent code changes. Use when new non-documentation commits occured since last ai documentation commit.
+description: Update documents under `.aidocs` directory to reflect recent code changes. Use when new non-documentation commits occured since last ai documentation commit.
 context: fork
 ---
 
@@ -10,4 +10,4 @@ First fetch git commit history and identify all commits after the last commit wi
 
 Then update the documents under `.aidocs` directory accordingly with the updated file summaries. Make sure the documents accurately represent the current state of the codebase after the recent changes.
 
-After updating the documents, commit with `ai-docs-commit` skill with arguments "update docs after code changes".
+After updating the documents, commit with `ai-docs-commit` skill with proper commit message as $ARGUMENTS.
